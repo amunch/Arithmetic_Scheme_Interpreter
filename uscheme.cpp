@@ -78,7 +78,7 @@ string parse_token(istream &s) {
     else {
         char next_num = s.peek();
         while(isdigit(next_num)) {
-            token = token + s.get();
+            token = token + to_string(s.get());
         }
     } 
 
@@ -88,16 +88,16 @@ string parse_token(istream &s) {
 Node *parse_expression(istream &s) {
     string token = parse_token(s);
 
-    if((token == "") || (token == ")") {
+    if((token == "") || (token == ")")) {
         return nullptr;
     }
-    elseif(token == "(") {
+    else if(token == "(") {
         token = parse_token(s);
         auto left = parse_expression(s);
-        if(left) {
+        if(&left) {
             auto right = parse_expression(s);
         }
-        if(right) {
+        if(&right) {
             parse_token(s);
         }
     }
@@ -108,17 +108,17 @@ Node *parse_expression(istream &s) {
 // Interpreter -----------------------------------------------------------------
 
 void evaluate_r(const Node *n, stack<int> &s) {
-    if(n->left()) {
+    if(n->left) {
         evaluate_r(n->left, s);
         evaluate_r(n->right, s);
     }
     if(isdigit(n->value[0])) {
-        s.push(atoi(n->value.cstr()));
+        s.push(atoi(n->value.c_str()));
     }
     else {
-        first = atoi(s.top().c_str());
+        int first = atoi((s.top()).c_str());
         s.pop();
-        second = atoi(s.top().c_str());
+        int second = atoi((s.top()).c_str());
         s.pop();
         if(n->value == "+") {
             s.push(first + second);
