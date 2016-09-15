@@ -26,6 +26,7 @@ struct Node {
 	left=l;
 	right=r;
     } 
+    ~Node() {;}
     string value;
     Node * left;
     Node * right;
@@ -35,49 +36,16 @@ struct Node {
 
 
 ostream &operator<<(ostream &os, const Node &n) {
-    stack<Node> nums;
-    stack<bool> side;
-    int num_right = 2;
-    nums.push(n);
-
-    while(!nums.empty()) {
-        Node temp = nums.top();
-        nums.pop();
-	if(!side.empty()) {
-            if(side.top()) {
-                cout << "left=";
-		cout << "(Node: value=";
-                cout << temp.value;
-		if(isdigit(temp.value[0])) {cout << ")";}
-            }
-            else {
-                cout << "right=";
-		cout << "(Node: value=";
-                cout << temp.value;
-                if(isdigit(temp.value[0])) {
-		    for(int j = 0; j < num_right; j++) {   
-			cout << ")";
-		    }
-		    num_right++;
-		}
-            }
-	    side.pop();
-	    if(!nums.empty() && side.empty()) {cout << ", ";}
-        }
-	else {
-            cout << "(Node: value=";
-            cout << temp.value;      
-            cout << ", ";
-	}
-	if(temp.right) {
-            nums.push(*temp.right);
-            side.push(0);
-        }
-        if(temp.left) { 
-	    nums.push(*temp.left);
-            side.push(1);
-        }
+    cout << "(Node: value=";
+    cout << n.value;
+    if(n.left) {
+	cout << " left=";
+	os << *n.left;
+	cout << " right=";
+    	os << *n.right;
     }
+    cout << ")";
+
     return os;
 }
 
@@ -110,7 +78,6 @@ Node *parse_expression(istream &s) {
     string token = parse_token(s);
     Node *left=nullptr; Node *right=nullptr; 
     if((token == "") || (token == ")")) {
-	cout << NULL;
 	return nullptr;
     }
     else if(token == "(") { 
@@ -129,7 +96,6 @@ Node *parse_expression(istream &s) {
 // Interpreter -----------------------------------------------------------------
 
 void evaluate_r(const Node *n, stack<int> &s) {
-    cout<<"yo"<<endl;
     if(n->left) {
         evaluate_r(n->left, s);
         evaluate_r(n->right, s);
@@ -143,16 +109,16 @@ void evaluate_r(const Node *n, stack<int> &s) {
         int second = s.top();
         s.pop();
         if(n->value == "+") {
-            s.push(first + second);
+            s.push(second + first);
         }
         if(n->value == "-") {
-            s.push(first - second);
+            s.push(second - first);
         }
         if(n->value == "/") {
-            s.push(first / second);
+            s.push(second / first);
         }
         if(n->value == "*") {
-            s.push(first * second);
+            s.push(second * first);
         }
     }
 }
@@ -197,7 +163,7 @@ int main(int argc, char *argv[]) {
         Node *n = parse_expression(s);
         if (DEBUG) { cout << "TREE: " << *n << endl; }
 
-        //cout << evaluate(n) << endl;
+        cout << evaluate(n) << endl;
 
         delete n;
     }
