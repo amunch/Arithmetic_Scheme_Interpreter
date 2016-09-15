@@ -26,7 +26,12 @@ struct Node {
 	left=l;
 	right=r;
     } 
-    ~Node() {;}
+    ~Node() {
+	if(left)
+	    delete left;
+	if(right)
+	    delete right;
+    }
     string value;
     Node * left;
     Node * right;
