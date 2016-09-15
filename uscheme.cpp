@@ -17,37 +17,39 @@ bool DEBUG = false;
 // Structures ------------------------------------------------------------------
 
 struct Node {
-    Node() {
-	value="";
-	left=nullptr; right=nullptr;
+    Node() { // constructor
+	value=""; //empty string
+	left=nullptr; right=nullptr; //null children
     }
-    Node(string v, Node *l, Node *r) {
-	value=v;
+    Node(string v, Node *l, Node *r) { //constructor with values
+	value=v; //set value
+	//set children
 	left=l;
 	right=r;
     } 
-    ~Node() {
-	if(left)
-	    delete left;
-	if(right)
-	    delete right;
+    ~Node() { //deconstructor
+	if(left) //is left not null
+	    delete left; //DELETE IT!!!
+	if(right) //is right not null
+	    delete right; //BURN IT WITH FIRE
     }
-    string value;
+    string value; //value of the node
+    //children
     Node * left;
     Node * right;
-
+    //override << operator
     friend ostream &operator<<(ostream &os, const Node &n);
 };
 
-
+//overide <<
 ostream &operator<<(ostream &os, const Node &n) {
     cout << "(Node: value=";
-    cout << n.value;
-    if(n.left) {
+    cout << n.value; //print value of node n
+    if(n.left) { //is left not null which means right is also not null
 	cout << " left=";
-	os << *n.left;
+	os << *n.left; //print left recursively
 	cout << " right=";
-    	os << *n.right;
+    	os << *n.right; //print right recursively
     }
     cout << ")";
 
@@ -55,43 +57,44 @@ ostream &operator<<(ostream &os, const Node &n) {
 }
 
 // Parser ----------------------------------------------------------------------
-
+//get the next operator or number
 string parse_token(istream &s) {
     string token;
     char next;
     char temp;
-    next = s.peek();
-    if(isspace(next)) {
-        temp = s.get();
+    next = s.peek(); //get the next without popping it off
+    if(isspace(next)) { //if a space then move on
+        temp = s.get(); //just get in a temp variable to throw away
     }
     
-    next = s.peek();
+    next = s.peek(); //peak again to see next item
+    //is a operator aka non number
     if((next == '(') || (next == ')') || (next == '+') || (next == '-') || (next == '*') || (next == '/')) {
-        token = s.get();
+        token = s.get(); //get it
     }
-    else {
+    else { //a number then
         char next_num = s.peek();
-        while(isdigit(next_num)) {
-	    token = token + to_string(s.get()-'0');
+        while(isdigit(next_num)) { //while we have digits to get
+	    token = token + to_string(s.get()-'0'); //add on the next digit and convert to int
 	    next_num = s.peek();
         }
     }
     return token;
 }
-
+//put together the tree
 Node *parse_expression(istream &s) {
-    string token = parse_token(s);
+    string token = parse_token(s); //get the operator or number
     Node *left=nullptr; Node *right=nullptr; 
-    if((token == "") || (token == ")")) {
+    if((token == "") || (token == ")")) { //we are done here so return null
 	return nullptr;
     }
-    else if(token == "(") { 
-  	token = parse_token(s);
-        left = parse_expression(s);
-        if(left) {
-            right = parse_expression(s);
+    else if(token == "(") { //got a operator to follow (
+  	token = parse_token(s); //get the operator
+        left = parse_expression(s); //do same on next number or operator
+        if(left) { //does it exist?
+            right = parse_expression(s); //do it on right too
         }
-        if(right) {
+        if(right) { //right exist?
             parse_token(s);
         }
     }
@@ -99,35 +102,35 @@ Node *parse_expression(istream &s) {
 }
 
 // Interpreter -----------------------------------------------------------------
-
+//recursive helper function to eveluate
 void evaluate_r(const Node *n, stack<int> &s) {
-    if(n->left) {
-        evaluate_r(n->left, s);
-        evaluate_r(n->right, s);
+    if(n->left) { //does left exist so right also does
+        evaluate_r(n->left, s); //do same on left
+        evaluate_r(n->right, s); //and right
     }
-    if(isdigit(n->value[0])) {
-        s.push(atoi(n->value.c_str()));
+    if(isdigit(n->value[0])) { //is a digit
+        s.push(atoi(n->value.c_str())); //add the value to the stack
     }
-    else {
-        int first = s.top();
+    else { //not a digit so operator
+        int first = s.top(); //first digit
         s.pop();
-        int second = s.top();
+        int second = s.top(); //second
         s.pop();
-        if(n->value == "+") {
+        if(n->value == "+") { //add
             s.push(second + first);
         }
-        if(n->value == "-") {
+        if(n->value == "-") { //subtract
             s.push(second - first);
         }
-        if(n->value == "/") {
+        if(n->value == "/") { //divide
             s.push(second / first);
         }
-        if(n->value == "*") {
+        if(n->value == "*") { //multiply
             s.push(second * first);
         }
     }
 }
-
+//evaluate by going through the tree
 int evaluate(const Node *n) {
     stack<int> s;
     evaluate_r(n, s);
