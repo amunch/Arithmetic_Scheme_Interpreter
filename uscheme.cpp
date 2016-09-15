@@ -25,11 +25,7 @@ struct Node {
 	value=v;
 	left=l;
 	right=r;
-    }
-    ~Node() {
-	delete left;
-	delete right;
-    }
+    } 
     string value;
     Node * left;
     Node * right;
@@ -41,31 +37,45 @@ struct Node {
 ostream &operator<<(ostream &os, const Node &n) {
     stack<Node> nums;
     stack<bool> side;
+    int num_right = 2;
     nums.push(n);
-
 
     while(!nums.empty()) {
         Node temp = nums.top();
         nums.pop();
-        cout << "(Node: value=";
-        cout << temp.value;      
-        if(!side.empty()) {
+	if(!side.empty()) {
             if(side.top()) {
                 cout << "left=";
+		cout << "(Node: value=";
+                cout << temp.value;
+		if(isdigit(temp.value[0])) {cout << ")";}
             }
             else {
                 cout << "right=";
+		cout << "(Node: value=";
+                cout << temp.value;
+                if(isdigit(temp.value[0])) {
+		    for(int j = 0; j < num_right; j++) {   
+			cout << ")";
+		    }
+		    num_right++;
+		}
             }
-            side.pop();
+	    side.pop();
+	    if(!nums.empty() && side.empty()) {cout << ", ";}
         }
-        if(temp.left) { 
-            cout<<temp.left->value<<endl;
-	    nums.push(*temp.left);
-            side.push(1);
-        }
-        if(temp.right) {
+	else {
+            cout << "(Node: value=";
+            cout << temp.value;      
+            cout << ", ";
+	}
+	if(temp.right) {
             nums.push(*temp.right);
             side.push(0);
+        }
+        if(temp.left) { 
+	    nums.push(*temp.left);
+            side.push(1);
         }
     }
     return os;
@@ -92,7 +102,7 @@ string parse_token(istream &s) {
 	    token = token + to_string(s.get()-'0');
 	    next_num = s.peek();
         }
-    }  
+    }
     return token;
 }
 
@@ -100,10 +110,11 @@ Node *parse_expression(istream &s) {
     string token = parse_token(s);
     Node *left=nullptr; Node *right=nullptr; 
     if((token == "") || (token == ")")) {
+	cout << NULL;
 	return nullptr;
     }
     else if(token == "(") { 
-  	string token = parse_token(s);
+  	token = parse_token(s);
         left = parse_expression(s);
         if(left) {
             right = parse_expression(s);
