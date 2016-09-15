@@ -17,15 +17,26 @@ bool DEBUG = false;
 // Structures ------------------------------------------------------------------
 
 struct Node {
-    Node(string value, Node *left=nullptr, Node *right=nullptr);
-    ~Node();
-
+    Node() {
+	value="";
+	left=nullptr; right=nullptr;
+    }
+    Node(string v, Node *l, Node *r) {
+	value=v;
+	left=l;
+	right=r;
+    }
+    ~Node() {
+	delete left;
+	delete right;
+    }
     string value;
     Node * left;
     Node * right;
 
     friend ostream &operator<<(ostream &os, const Node &n);
 };
+
 
 ostream &operator<<(ostream &os, const Node &n) {
     stack<Node> nums;
@@ -34,7 +45,7 @@ ostream &operator<<(ostream &os, const Node &n) {
 
 
     while(!nums.empty()) {
-        auto temp = nums.top();
+        Node temp = nums.top();
         nums.pop();
         cout << "(Node: value=";
         cout << temp.value;      
@@ -47,9 +58,9 @@ ostream &operator<<(ostream &os, const Node &n) {
             }
             side.pop();
         }
-    
-        if(temp.left) {
-            nums.push(*temp.left);
+        if(temp.left) { 
+            cout<<temp.left->value<<endl;
+	    nums.push(*temp.left);
             side.push(1);
         }
         if(temp.right) {
@@ -70,7 +81,7 @@ string parse_token(istream &s) {
     if(isspace(next)) {
         temp = s.get();
     }
-
+    
     next = s.peek();
     if((next == '(') || (next == ')') || (next == '+') || (next == '-') || (next == '*') || (next == '/')) {
         token = s.get();
@@ -78,36 +89,36 @@ string parse_token(istream &s) {
     else {
         char next_num = s.peek();
         while(isdigit(next_num)) {
-            token = token + to_string(s.get());
+	    token = token + to_string(s.get()-'0');
+	    next_num = s.peek();
         }
-    } 
-
+    }  
     return token;
 }
 
 Node *parse_expression(istream &s) {
     string token = parse_token(s);
-
+    Node *left=nullptr; Node *right=nullptr; 
     if((token == "") || (token == ")")) {
-        return nullptr;
+	return nullptr;
     }
-    else if(token == "(") {
-        token = parse_token(s);
-        auto left = parse_expression(s);
-        if(&left) {
-            auto right = parse_expression(s);
+    else if(token == "(") { 
+  	string token = parse_token(s);
+        left = parse_expression(s);
+        if(left) {
+            right = parse_expression(s);
         }
-        if(&right) {
+        if(right) {
             parse_token(s);
         }
     }
-
-    return new Node(token, left, right);
+    return new Node(token,left,right);
 }
 
 // Interpreter -----------------------------------------------------------------
 
 void evaluate_r(const Node *n, stack<int> &s) {
+    cout<<"yo"<<endl;
     if(n->left) {
         evaluate_r(n->left, s);
         evaluate_r(n->right, s);
@@ -116,9 +127,9 @@ void evaluate_r(const Node *n, stack<int> &s) {
         s.push(atoi(n->value.c_str()));
     }
     else {
-        int first = atoi((s.top()).c_str());
+        int first = s.top();
         s.pop();
-        int second = atoi((s.top()).c_str());
+        int second = s.top();
         s.pop();
         if(n->value == "+") {
             s.push(first + second);
@@ -175,7 +186,7 @@ int main(int argc, char *argv[]) {
         Node *n = parse_expression(s);
         if (DEBUG) { cout << "TREE: " << *n << endl; }
 
-        cout << evaluate(n) << endl;
+        //cout << evaluate(n) << endl;
 
         delete n;
     }
