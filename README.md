@@ -24,7 +24,7 @@ Questions
 ---------
 
 Question 1:
-
+	The complexity of this program is Nlog(N), where N is the total number of characters, including digits, operations, and parentheses.  This is because it takes N operations to read in all of the data, and then log(N) to traverse the tree for each element.  This time to run this program would increase slightly more than constantly for an increase in the size of the input.  A stack does not affect the evaluation because all operations on the stack take place in constant time.
 
 Question 2:
 	The uscheme executable size is 112K while the uschemeSmart is 171K. However, the memory used by both executables is same. We prefer the one with smart pointers even though the size of the executable is larger. The amount of memory the smart pointer program uses is not enough to outweigh the easiness of using smart pointers. Furthermore, smart pointers protect us from memory leaks and helps prevents errors. Therefore, using smart pointers is the better choice since the pros easily override the con of the larger executable.  
