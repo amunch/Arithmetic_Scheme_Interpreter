@@ -1,6 +1,8 @@
 Project 01: uScheme
 ===================
 
+By Andy Munch (amunch) & Mark Pruitt (mpruitt1)
+
 This is a simple implementation of a [Scheme] interpreter that supports the
 following syntax:
 
@@ -33,4 +35,4 @@ Questions
 	To support more than 2 numbers or operators, the tree could no longer be binary. Each parent would need to support more than two children or a different container would need to be used all together such has the struct containig a stack of nodes. The parser would need to continue to accept new numbers and push into the stack of nodes until a ")" is reached. The interpreter would need to popout all the numbers from the stack and compute them by using the operator on the total and the new number. 
 
 *Contributions:*
-	Both members of the group pair programmed the entire project so each member was present and involved in all aspects of producing the end result.
+	Both members (amunch & mpruitt1) of the group pair programmed the entire project so each member was present and involved in all aspects of producing the end result.
